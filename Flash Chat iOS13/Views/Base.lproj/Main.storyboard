@@ -348,7 +348,7 @@
                     <navigationItem key="navigationItem" id="ARl-cC-jC4">
                         <barButtonItem key="rightBarButtonItem" title="Log Out" id="jwH-6K-jmO">
                             <connections>
-                                <action selector="logOutPressed:" destination="KDi-6G-k1Z" id="yRe-G0-Vol"/>
+                                <action selector="logOutPressed:" destination="KDi-6G-k1Z" id="nGv-KF-Jnd"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
