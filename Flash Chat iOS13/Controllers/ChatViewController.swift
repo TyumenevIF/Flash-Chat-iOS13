@@ -14,6 +14,8 @@ class ChatViewController: UIViewController {
     
     var messages: [Message] = []
     
+    private lazy var logOutButton = UIBarButtonItem(title: "Log Out", style: .plain, target: self, action: #selector(logOutPressed))
+    
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.allowsSelection = false
@@ -58,9 +60,8 @@ class ChatViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: K.BrandColors.purple)
-        title = K.appName
-        navigationItem.hidesBackButton = true
         
+        configureNavigationBar()
         tableView.dataSource = self
         tableView.register(UINib(nibName: K.cellNibName, bundle: nil), forCellReuseIdentifier: K.cellIdentifier)
         
@@ -104,6 +105,15 @@ class ChatViewController: UIViewController {
         ])
     }
     
+    private func configureNavigationBar() {
+        title = K.appName
+        
+        navigationItem.hidesBackButton = true
+        navigationItem.largeTitleDisplayMode = .automatic
+        navigationItem.rightBarButtonItem = logOutButton
+        logOutButton.tintColor = .white
+    }
+    
     private func loadMessages() {
         
         db.collection(K.FStore.collectionName).order(by: K.FStore.dateField).addSnapshotListener { (querySnapshot, error) in
@@ -133,7 +143,7 @@ class ChatViewController: UIViewController {
     }
     
     // MARK: - Target actions
-    @IBAction func sendPressed(_ sender: UIButton) {
+    @objc func sendPressed(_ sender: UIButton) {
         
         if let messageBody = messageTextField.text, let messageSender = Auth.auth().currentUser?.email {
             db.collection(K.FStore.collectionName).addDocument(data: [
@@ -152,7 +162,7 @@ class ChatViewController: UIViewController {
         }
     }
     
-    @IBAction func logOutPressed(_ sender: UIBarButtonItem) {
+    @objc func logOutPressed(_ sender: UIBarButtonItem) {
         do {
             try Auth.auth().signOut()
             navigationController?.popToRootViewController(animated: true)
