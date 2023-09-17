@@ -141,8 +141,7 @@ class LoginViewController: UIViewController {
                 if let err = error {
                     print(err.localizedDescription)
                 } else {
-//                    self.performSegue(withIdentifier: K.registerSegue, sender: self)
-                    print("logInPressed")
+                    self.navigationController?.pushViewController(ChatViewController(), animated: true)
                 }
             }
         }

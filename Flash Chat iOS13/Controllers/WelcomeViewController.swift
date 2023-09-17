@@ -90,15 +90,14 @@ class WelcomeViewController: UIViewController {
             logInButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             logInButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 8),
             logInButton.heightAnchor.constraint(equalToConstant: 61)
-            
         ])
     }
     
     @objc func registerButtonPressed() {
-        print("registerButtonPressed")
+        self.navigationController?.pushViewController(RegisterViewController(), animated: true)
     }
     
     @objc func logInButtonPressed() {
-        print("logInButtonPressed")
+        self.navigationController?.pushViewController(LoginViewController(), animated: true)
     }
 }
