@@ -10,15 +10,54 @@ import Firebase
 
 class ChatViewController: UIViewController {
     
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var messageTextfield: UITextField!
-    
     let db = Firestore.firestore()
     
     var messages: [Message] = []
     
+    private let tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.allowsSelection = false
+        tableView.separatorStyle = .none
+        tableView.separatorInset.left = 0
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
+    }()
+    
+    private let messageView: UIView = {
+        let view = UIView()
+        view.contentMode = .scaleToFill
+        view.backgroundColor = UIColor(named: K.BrandColors.purple)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private let messageTextField: UITextField = {
+        let textField = UITextField()
+        textField.font = .systemFont(ofSize: 14)
+        textField.textColor = UIColor(named: K.BrandColors.purple)
+        textField.textAlignment = .natural
+        textField.placeholder = "Write a message..."
+        textField.borderStyle = .roundedRect
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        return textField
+    }()
+    
+    lazy var sendButton: UIButton = {
+        let button = UIButton()
+        button.titleLabel?.font = .systemFont(ofSize: 18)
+        button.setBackgroundImage(UIImage(systemName: "paperplane.fill"), for: .normal)
+        button.tintColor = UIColor(named: K.BrandColors.lightPurple)
+        button.contentHorizontalAlignment = .center
+        button.contentMode = .scaleToFill
+        button.addTarget(self, action: #selector(sendPressed), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    // MARK: - Override Methods
     override func viewDidLoad() {
-        super.viewDidLoad()        
+        super.viewDidLoad()
+        view.backgroundColor = UIColor(named: K.BrandColors.purple)
         title = K.appName
         navigationItem.hidesBackButton = true
         
@@ -26,9 +65,46 @@ class ChatViewController: UIViewController {
         tableView.register(UINib(nibName: K.cellNibName, bundle: nil), forCellReuseIdentifier: K.cellIdentifier)
         
         loadMessages()
+        
+        setViews()
+        setupConstraints()
     }
     
-    func loadMessages() {
+    // MARK: - Private Methods
+    private func setViews() {
+        view.addSubview(tableView)
+        messageView.addSubview(messageTextField)
+        messageView.addSubview(sendButton)
+        view.addSubview(messageView)
+    }
+    
+    private func setupConstraints() {
+        
+        NSLayoutConstraint.activate([
+            
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: messageView.topAnchor),
+            
+            messageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            messageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            messageView.heightAnchor.constraint(equalToConstant: 60),
+            messageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            messageTextField.topAnchor.constraint(equalTo: messageView.topAnchor, constant: 20),
+            messageTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            messageTextField.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -20),
+            messageTextField.heightAnchor.constraint(equalToConstant: 40),
+            
+            sendButton.topAnchor.constraint(equalTo: messageView.topAnchor, constant: 20),
+            sendButton.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: -20),
+            sendButton.widthAnchor.constraint(equalToConstant: 40),
+            sendButton.heightAnchor.constraint(equalToConstant: 40)
+        ])
+    }
+    
+    private func loadMessages() {
         
         db.collection(K.FStore.collectionName).order(by: K.FStore.dateField).addSnapshotListener { (querySnapshot, error) in
             
@@ -56,9 +132,10 @@ class ChatViewController: UIViewController {
         }
     }
     
+    // MARK: - Target actions
     @IBAction func sendPressed(_ sender: UIButton) {
         
-        if let messageBody = messageTextfield.text, let messageSender = Auth.auth().currentUser?.email {
+        if let messageBody = messageTextField.text, let messageSender = Auth.auth().currentUser?.email {
             db.collection(K.FStore.collectionName).addDocument(data: [
                 K.FStore.senderField: messageSender,
                 K.FStore.bodyField: messageBody,
@@ -68,7 +145,7 @@ class ChatViewController: UIViewController {
                     print("There was an issue saving data to firestore, \(err)")
                 } else {
                     DispatchQueue.main.async {
-                        self.messageTextfield.text = ""
+                        self.messageTextField.text = ""
                     }
                 }
             }
@@ -85,6 +162,7 @@ class ChatViewController: UIViewController {
     }
 }
 
+// MARK: - UITableViewDataSource
 extension ChatViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
