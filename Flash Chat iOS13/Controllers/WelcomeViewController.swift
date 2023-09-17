@@ -16,6 +16,7 @@ class WelcomeViewController: UIViewController {
         label.backgroundColor = .clear
         label.textAlignment = .natural
         label.numberOfLines = 1
+        label.adjustsFontSizeToFitWidth = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -88,7 +89,7 @@ class WelcomeViewController: UIViewController {
             
             logInButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             logInButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            logInButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 8),
+            logInButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
             logInButton.heightAnchor.constraint(equalToConstant: 61)
         ])
     }
